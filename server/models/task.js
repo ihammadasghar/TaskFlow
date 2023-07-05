@@ -1,13 +1,13 @@
 const mongoose = require('mongoose')
 
 const taskSchema = new mongoose.Schema({
-  title: {
+  header: {
     type: String,
     required: true
   },
   description: {
     type: String,
-    required: true
+    required: false
   },
   createdAt: {
     type: Date,
@@ -16,9 +16,20 @@ const taskSchema = new mongoose.Schema({
   },
   updatedAt: {
     type: Date,
+    required: false
+  },
+  taskBoard: {
+    type: mongoose.Types.ObjectId,
     required: true,
-    default: Date.now
+    ref: "TaskBoard"
+  },
+  taskStage: {
+    type: Number,
+    required: true
   }
 })
+
+// Index by taskboard for querying and taskstage for sorting
+taskSchema.index({taskBoard: 1, taskStage: 1})
 
 module.exports = mongoose.model('Task', taskSchema)

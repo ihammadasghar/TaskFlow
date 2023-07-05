@@ -1,27 +1,27 @@
 const express = require('express')
 const router = express.Router()
-const Task = require('../models/Task')
+const Comment = require('../models/Comment')
 
 router.get('/', async (req, res) => {
   try {
-    const tasks = await Task.find()
-    res.json(tasks)
+    const comments = await Comment.find()
+    res.json(comments)
   } catch (err) {
     res.status(500).json({ message: err.message })
   }
 })
 
 
-router.get('/:id', getTask, (req, res) => {
-  res.json(res.task)
+router.get('/:id', getComment, (req, res) => {
+  res.json(res.comment)
 })
 
 
 router.post('/', async (req, res) => {
-  const task = new Task(req.body)
+  const comment = new Comment(req.body)
   try {
-    const newTask = await task.save()
-    res.status(201).json(newTask)
+    const newComment = await comment.save()
+    res.status(201).json(newComment)
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -31,8 +31,8 @@ router.post('/', async (req, res) => {
 router.patch('/:id', async (req, res) => {
   try {
     let replacement = {...req.body, updatedAt: Date.now()}
-    const updatedTask = await Task.updateOne({_id: req.params.id}, replacement)
-    res.json(updatedTask)
+    const updatedComment = await Comment.updateOne({_id: req.params.id}, replacement)
+    res.json(updatedComment)
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -41,25 +41,25 @@ router.patch('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
-    await Task.deleteOne({_id: req.params.id})
-    res.json({ message: 'Deleted Task' })
+    await Comment.deleteOne({_id: req.params.id})
+    res.json({ message: 'Deleted Comment' })
   } catch (err) {
     res.status(500).json({ message: err.message })
   }
 })
 
-async function getTask(req, res, next) {
-  let task
+async function getComment(req, res, next) {
+  let comment
   try {
-    task = await Task.findById(req.params.id)
-    if (task == null) {
-      return res.status(404).json({ message: 'Cannot find task' })
+    comment = await Comment.findById(req.params.id)
+    if (comment == null) {
+      return res.status(404).json({ message: 'Cannot find comment' })
     }
   } catch (err) {
     return res.status(500).json({ message: err.message })
   }
 
-  res.task = task
+  res.comment = comment
   next()
 }
 
