@@ -1,66 +1,44 @@
 const express = require('express')
 const router = express.Router()
 const Comment = require('../models/Comment')
+const Task = require('../models/Task')
 
-router.get('/', async (req, res) => {
+router.post('/add', async (req, res) => {
+  const comment = new Comment({
+    message: req.body.message
+  })
   try {
-    const comments = await Comment.find()
-    res.json(comments)
+    const updatedTask = await comment.save().then(c => (
+      Task.findByIdAndUpdate(req.body.taskId,{ '$push': { 'comments': c._id } }, {new: true})
+  ))
+    res.status(201).json({updatedTask, success: true, message: 'Added Comment'})
   } catch (err) {
-    res.status(500).json({ message: err.message })
+    res.status(400).json({ success: false, message: err.message })
   }
 })
 
-
-router.get('/:id', getComment, (req, res) => {
-  res.json(res.comment)
-})
-
-
-router.post('/', async (req, res) => {
-  const comment = new Comment(req.body)
+router.patch('/edit', async (req, res) => {
   try {
-    const newComment = await comment.save()
-    res.status(201).json(newComment)
-  } catch (err) {
-    res.status(400).json({ message: err.message })
-  }
-})
-
-
-router.patch('/:id', async (req, res) => {
-  try {
-    let replacement = {...req.body, updatedAt: Date.now()}
-    const updatedComment = await Comment.updateOne({_id: req.params.id}, replacement)
-    res.json(updatedComment)
-  } catch (err) {
-    res.status(400).json({ message: err.message })
-  }
-})
-
-
-router.delete('/:id', async (req, res) => {
-  try {
-    await Comment.deleteOne({_id: req.params.id})
-    res.json({ message: 'Deleted Comment' })
-  } catch (err) {
-    res.status(500).json({ message: err.message })
-  }
-})
-
-async function getComment(req, res, next) {
-  let comment
-  try {
-    comment = await Comment.findById(req.params.id)
-    if (comment == null) {
-      return res.status(404).json({ message: 'Cannot find comment' })
+    let replacement = {
+      message: req.body.message, 
+      updatedAt: Date.now()
     }
+    await Comment.updateOne({_id: req.body._id}, replacement, {new: true})
+    const updatedTask = await Task.findById(req.body.taskId)
+    res.json({updatedTask, success: true, message: 'Updated Comment'})
   } catch (err) {
-    return res.status(500).json({ message: err.message })
+    res.status(400).json({ success: false, message: err.message })
   }
+})
 
-  res.comment = comment
-  next()
-}
+router.delete('/remove', async (req, res) => {
+  try {
+    await Comment.deleteOne({_id: req.body._id})
+    const updatedTask = await Task.findByIdAndUpdate(req.body.taskId,{ '$pull': { 'comments': req.body._id } })
+    res.json({ updatedTask, success: true, message: 'Deleted Comment' })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+})
 
 module.exports = router

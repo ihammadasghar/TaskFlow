@@ -13,11 +13,6 @@ const commentSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     required: false
-  },
-  task: {
-    type: mongoose.Types.ObjectId,
-    required: true,
-    ref: "Task"
   }
 })
 
