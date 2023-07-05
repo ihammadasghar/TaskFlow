@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const Task = require('../models/task')
+const Task = require('../models/Task')
 
 router.get('/', async (req, res) => {
   try {
@@ -18,10 +18,7 @@ router.get('/:id', getTask, (req, res) => {
 
 
 router.post('/', async (req, res) => {
-  const task = new Task({
-    name: req.body.name,
-    subscribedToChannel: req.body.subscribedToChannel
-  })
+  const task = new Task(req.body)
   try {
     const newTask = await task.save()
     res.status(201).json(newTask)
@@ -31,15 +28,10 @@ router.post('/', async (req, res) => {
 })
 
 
-router.patch('/:id', getTask, async (req, res) => {
-  if (req.body.name != null) {
-    res.task.name = req.body.name
-  }
-  if (req.body.subscribedToChannel != null) {
-    res.task.subscribedToChannel = req.body.subscribedToChannel
-  }
+router.patch('/:id', async (req, res) => {
   try {
-    const updatedTask = await res.task.save()
+    let replacement = {...req.body, updatedAt: Date.now()}
+    const updatedTask = await Task.updateOne({_id: req.params.id}, replacement)
     res.json(updatedTask)
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -47,9 +39,9 @@ router.patch('/:id', getTask, async (req, res) => {
 })
 
 
-router.delete('/:id', getTask, async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
-    await res.task.remove()
+    await Task.deleteOne({_id: req.params.id})
     res.json({ message: 'Deleted Task' })
   } catch (err) {
     res.status(500).json({ message: err.message })
