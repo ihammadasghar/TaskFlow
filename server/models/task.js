@@ -18,15 +18,14 @@ const taskSchema = new mongoose.Schema({
     type: Date,
     required: false
   },
-  taskBoard: {
-    type: mongoose.Types.ObjectId,
-    required: true,
-    ref: "TaskBoard"
-  },
-  taskStage: {
+  stage: {
     type: Number,
     required: true
-  }
+  },
+  comments: [{
+    type: mongoose.Types.ObjectId,
+    ref: "Comment"
+  }]
 })
 
 // Index by taskboard for querying and taskstage for sorting
