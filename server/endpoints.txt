@@ -1,0 +1,12 @@
+api/taskboards/list
+api/taskboards/add
+api/taskboards/edit
+api/taskboards/details
+api/taskboards/delete
+api/tasks/add
+api/tasks/edit
+api/tasks/delete
+api/tasks/details
+api/comments/add
+api/comments/edit
+api/comments/delete

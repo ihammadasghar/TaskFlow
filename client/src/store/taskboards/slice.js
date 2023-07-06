@@ -1,13 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const taskSlice = createSlice({
-  name: "tasks",
+const taskBoardsSlice = createSlice({
+  name: "taskBoards",
   initialState: {
-    allTasks: [],
-    loadedTaskboardId: null,
-    choosenTaskboardId: null,
-    detailViewTaskId: null,
-    taskComments: [],
+    allTaskBoards: [],
+    loadedTaskboard: null,
+    loadedTask: null,
     lastTaskFetchDt: null
   },
   reducers: {
@@ -27,6 +25,6 @@ const taskSlice = createSlice({
   },
 });
 
-export const taskActions = taskSlice.actions;
+export const taskBoardActions = taskBoardsSlice.actions;
 
-export default taskSlice;
+export default taskBoardsSlice;

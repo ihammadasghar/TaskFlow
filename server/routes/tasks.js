@@ -7,9 +7,9 @@ const TaskBoard = require('../models/TaskBoard')
 router.get('/details', async (req, res) => {
   try {
       const taskDetails = await Task.findOne({_id: req.body._id}).populate("comments")
-      res.json(taskDetails)
+      res.json({data: taskDetails, success: true, message: "Fetched Task"})
     } catch (err) {
-      res.status(500).json({ message: err.message })
+      res.status(500).json({ success: false, message: err.message })
     }
 })
 
@@ -22,7 +22,7 @@ router.post('/add', async (req, res) => {
     const updatedTaskBoard = await task.save().then(t => (
       TaskBoard.findByIdAndUpdate(req.body.taskBoardId,{ '$push': { 'tasks': t._id } }, {new: true})
   ))
-    res.status(201).json({updatedTaskBoard, success: true, message: 'Added Task'})
+    res.status(201).json({data: updatedTaskBoard, success: true, message: 'Added Task'})
   } catch (err) {
     res.status(400).json({ success: false, message: err.message })
   }
@@ -37,7 +37,7 @@ router.patch('/edit', async (req, res) => {
     }
     await Task.updateOne({_id: req.body._id}, replacement)
     const updatedTaskboard = await TaskBoard.findById(req.body.taskBoardId)
-    res.json({updatedTaskboard, success: true, message: 'Updated Task'})
+    res.json({data: updatedTaskboard, success: true, message: 'Updated Task'})
   } catch (err) {
     res.status(400).json({ success: false, message: err.message })
   }
@@ -47,7 +47,7 @@ router.delete('/remove', async (req, res) => {
   try {
     await Task.deleteOne({_id: req.body._id})
     const updatedTaskBoard = await TaskBoard.findByIdAndUpdate(req.body.taskBoardId,{ '$pull': { 'tasks': req.body._id } })
-    res.json({ updatedTaskBoard, success: true, message: 'Deleted Task' })
+    res.json({ data: updatedTaskBoard, success: true, message: 'Deleted Task' })
   } catch (err) {
     res.status(500).json({ success: false, message: err.message })
   }

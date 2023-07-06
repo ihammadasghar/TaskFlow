@@ -1,11 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import uiSlice from './ui/slice';
-import taskSlice from './tasks/slice';
+import taskBoardsSlice from './taskboards/slice';
 
 const store = configureStore({
   reducer: {
     ui: uiSlice.reducer,
-    tasks: taskSlice.reducer
+    taskBoards: taskBoardsSlice.reducer
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({
     serializableCheck: false

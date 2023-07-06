@@ -11,7 +11,7 @@ router.post('/add', async (req, res) => {
     const updatedTask = await comment.save().then(c => (
       Task.findByIdAndUpdate(req.body.taskId,{ '$push': { 'comments': c._id } }, {new: true})
   ))
-    res.status(201).json({updatedTask, success: true, message: 'Added Comment'})
+    res.status(201).json({data: updatedTask, success: true, message: 'Added Comment'})
   } catch (err) {
     res.status(400).json({ success: false, message: err.message })
   }
@@ -25,7 +25,7 @@ router.patch('/edit', async (req, res) => {
     }
     await Comment.updateOne({_id: req.body._id}, replacement, {new: true})
     const updatedTask = await Task.findById(req.body.taskId)
-    res.json({updatedTask, success: true, message: 'Updated Comment'})
+    res.json({data: updatedTask, success: true, message: 'Updated Comment'})
   } catch (err) {
     res.status(400).json({ success: false, message: err.message })
   }
@@ -35,7 +35,7 @@ router.delete('/remove', async (req, res) => {
   try {
     await Comment.deleteOne({_id: req.body._id})
     const updatedTask = await Task.findByIdAndUpdate(req.body.taskId,{ '$pull': { 'comments': req.body._id } })
-    res.json({ updatedTask, success: true, message: 'Deleted Comment' })
+    res.json({ data: updatedTask, success: true, message: 'Deleted Comment' })
   } catch (err) {
     res.status(500).json({ success: false, message: err.message })
   }
