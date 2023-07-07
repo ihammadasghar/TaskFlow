@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const Task = require('../models/Task')
 const TaskBoard = require('../models/TaskBoard')
+const { saveTask, removeTask } = require('../controllers/TaskController')
 
 // get task
 router.get('/details', async (req, res) => {
@@ -16,41 +17,61 @@ router.get('/details', async (req, res) => {
 router.post('/add', async (req, res) => {
   const task = new Task({
     header: req.body.header,
-    stage: req.body.stage
+    stageId: req.body.stageId,
   })
   try {
-    const updatedTaskBoard = await task.save().then(t => (
-      TaskBoard.findByIdAndUpdate(req.body.taskBoardId,{ '$push': { 'tasks': t._id } }, {new: true})
-  ))
-    res.status(201).json({data: updatedTaskBoard, success: true, message: 'Added Task'})
+    await saveTask(task)
+
+    const taskBoardDetails = await getTaskBoardDetails(req.body.taskBoardId)
+    res.status(201).json({data: taskBoardDetails, success: true, message: 'Added Task'})
+    console.log("Added Task")
   } catch (err) {
     res.status(400).json({ success: false, message: err.message })
   }
 })
 
-router.patch('/edit', async (req, res) => {
+router.post('/edit', async (req, res) => {
   try {
     let replacement = {
-      header: req.body.header,
-      stage: req.body.stage, 
       updatedAt: Date.now()
     }
+    if(req.body.header) replacement['header'] = req.body.header
+    if(req.body.description) replacement['description'] = req.body.description
+
     await Task.updateOne({_id: req.body._id}, replacement)
-    const updatedTaskboard = await TaskBoard.findById(req.body.taskBoardId)
-    res.json({data: updatedTaskboard, success: true, message: 'Updated Task'})
+
+    const taskBoardDetails = await getTaskBoardDetails(req.body.taskBoardId)
+    res.json({data: taskBoardDetails, success: true, message: 'Updated Task'})
+    console.log("Updated Task")
   } catch (err) {
     res.status(400).json({ success: false, message: err.message })
   }
 })
 
-router.delete('/remove', async (req, res) => {
+router.post('/remove', async (req, res) => {
   try {
-    await Task.deleteOne({_id: req.body._id})
-    const updatedTaskBoard = await TaskBoard.findByIdAndUpdate(req.body.taskBoardId,{ '$pull': { 'tasks': req.body._id } })
-    res.json({ data: updatedTaskBoard, success: true, message: 'Deleted Task' })
+    await removeTask(req.body._id)
+
+    const taskBoardDetails = await getTaskBoardDetails(req.body.taskBoardId)
+    res.json({ data: taskBoardDetails, success: true, message: 'Deleted Task' })
+    console.log('Deleted Task')
   } catch (err) {
     res.status(500).json({ success: false, message: err.message })
   }
 })
+
+async function getTaskBoardDetails(taskBoardId) {
+  let taskBoard = await TaskBoard
+        .findOne({_id: taskBoardId})
+        .populate(
+          {
+            path: 'stages',
+            populate: {
+                path: 'tasks',
+                model: 'Task'
+            }
+          })
+  return taskBoard
+}
 
 module.exports = router

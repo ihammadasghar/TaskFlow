@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const taskSchema = new mongoose.Schema({
   header: {
@@ -18,17 +18,16 @@ const taskSchema = new mongoose.Schema({
     type: Date,
     required: false
   },
-  stage: {
-    type: Number,
-    required: true
-  },
   comments: [{
     type: mongoose.Types.ObjectId,
     ref: "Comment"
-  }]
+  }],
+  stageId: {
+    type: mongoose.Types.ObjectId,
+    required: true,
+    ref: "TaskStage"
+  }
 })
 
-// Index by taskboard for querying and taskstage for sorting
-taskSchema.index({taskBoard: 1, taskStage: 1})
-
-module.exports = mongoose.model('Task', taskSchema)
+const TaskModel = mongoose.model('Task', taskSchema)
+module.exports = TaskModel
