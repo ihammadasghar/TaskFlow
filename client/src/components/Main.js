@@ -10,7 +10,7 @@ import Navbar from './Navbar';
 import TaskBoardManager from './taskboards/TaskBoardManager';
 
 const Main = () => {
-  const { primary, secondary, backgroundLighter, backgroundDark, backgroundLight, onBackground } = useSelector((state) => state.ui.themeColors);
+  const { primary, secondary, highlight, onBackground } = useSelector((state) => state.ui.themeColors);
   const theme = createTheme({
     spacing: 5,
     palette: {
@@ -22,9 +22,9 @@ const Main = () => {
       },
       background: {
         default: secondary,
-        main: backgroundDark,
-        light: backgroundLight,
-        lighter: backgroundLighter
+        secondary: secondary,
+        primary: primary,
+        highlight: highlight
       },
       onBackground: {
         main: onBackground,
@@ -34,7 +34,7 @@ const Main = () => {
       }
     },
     styles: {
-      iconPrimary: { fill: primary },
+      iconPrimary: { fill: highlight },
       iconSecondary: { fill: secondary },
       iconOnBackground: { fill: onBackground, marginLeft: "5px", marginRight: "5px" },
     }

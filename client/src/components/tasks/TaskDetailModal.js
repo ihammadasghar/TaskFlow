@@ -13,7 +13,7 @@ const style = {
     position: 'absolute',
     transform: 'translate(-50%, -20%)',
     width: { xs: "90%", md: "50%" },
-    bgcolor: 'background.main',
+    bgcolor: 'background.secondary',
     boxShadow: 24,
     top: '20%',
     left: '50%',
@@ -67,14 +67,14 @@ const TaskDetailModal = () => {
                     <CardContent>
                         <Card
                             sx={{
-                                bgcolor: 'onBackground.box'
+                                bgcolor: 'background.highlight'
                             }}
                         >
                             <CardContent
                                 sx={{ p: 0 }}
                             >
                                 <List
-                                    sx={{ bgcolor: 'background.lighter' }}
+                                    sx={{ bgcolor: 'background.highlight' }}
                                 >
                                     <ListItem
                                         secondaryAction={

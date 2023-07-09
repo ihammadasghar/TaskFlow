@@ -51,7 +51,7 @@ const TaskBoard = () => {
         <Container component="main" maxWidth="lg" sx={{ mb: 2 }}>
             {detailsModalToggle && <TaskDetailModal />}
             <List
-                sx={{ bgcolor: 'background.light' }}
+                sx={{ bgcolor: 'background.primary' }}
             >
                 <ListItem
                     secondaryAction={
@@ -67,7 +67,7 @@ const TaskBoard = () => {
                     }
                 >
                     <ListItemAvatar>
-                        <Avatar>
+                        <Avatar  sx={{bgcolor: "background.highlight"}}>
                             <ListIcon />
                         </Avatar>
                     </ListItemAvatar>

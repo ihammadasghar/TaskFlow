@@ -8,6 +8,7 @@ import { AppBar, Box, Toolbar, IconButton, Typography, Menu, MenuItem, Container
 import { AccountBox, Person, Logout, Login } from '@mui/icons-material';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home'
+import PaletteIcon from '@mui/icons-material/Palette';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ListIcon from '@mui/icons-material/List';
 import Notification from './Notification';
@@ -42,6 +43,12 @@ const Navbar = () => {
       "Manager",
       () => changePage("/manager"),
       HomeIcon,
+      false
+    ],
+    [
+      "Switch Theme",
+      () => dispatch(uiActions.switchTheme()),
+      PaletteIcon,
       false
     ],
   ];
@@ -102,7 +109,7 @@ const Navbar = () => {
                 <ListItemIcon>
                   <Icon style={theme.styles.iconPrimary} />
                 </ListItemIcon>
-                <ListItemText primaryTypographyProps={{ color: "primary.main" }} primary={name} />
+                <ListItemText primaryTypographyProps={{ color: "background.highlight" }} primary={name} />
               </ListItemButton>
 
             </ListItem>
@@ -120,7 +127,7 @@ const Navbar = () => {
               <ListItemIcon>
                 <ListIcon style={theme.styles.iconPrimary} />
               </ListItemIcon>
-              <ListItemText primaryTypographyProps={{ color: "primary.main" }} primary="Taskboards" />
+              <ListItemText primaryTypographyProps={{ color: "background.highlight" }} primary="Taskboards" />
             </ListItemButton>
             <Menu
               id="taskboard-menu"
@@ -141,13 +148,13 @@ const Navbar = () => {
                     }}
                   >
                     <ListIcon style={theme.styles.iconPrimary} />
-                    <Typography textAlign="center" sx={{ color: "primary.main", ml: 1 }}>{item.name}</Typography>
+                    <Typography textAlign="center" sx={{ color: "background.highlight", ml: 1 }}>{item.name}</Typography>
                   </MenuItem>
                 </Link>
               ))
                 :
                 <MenuItem key="noTaskboards" onClick={() => toggle("navbarToggle")}>
-                  <Typography textAlign="center" sx={{ color: "primary.main", ml: 1 }}>No taskboards</Typography>
+                  <Typography textAlign="center" sx={{ color: "background.highlight", ml: 1 }}>No taskboards</Typography>
                 </MenuItem>
               }
             </Menu>
@@ -166,7 +173,7 @@ const Navbar = () => {
                 <ListItemIcon>
                   <Icon style={theme.styles.iconPrimary} />
                 </ListItemIcon>
-                <ListItemText primaryTypographyProps={{ color: "primary.main" }} primary={name} />
+                <ListItemText primaryTypographyProps={{ color: "background.highlight" }} primary={name} />
               </ListItemButton>
 
             </ListItem>
@@ -190,7 +197,7 @@ const Navbar = () => {
                 edge="start"
                 sx={{ mr: 2, }}
               >
-                <MenuIcon style={theme.styles.iconSecondary} sx={{ mx: 2 }} />
+                <MenuIcon style={theme.styles.iconPrimary} sx={{ mx: 2 }} />
               </IconButton>
               <Typography
                 variant="h6"
@@ -203,7 +210,7 @@ const Navbar = () => {
                   display: { xs: 'none', md: 'flex' },
                   fontFamily: 'Hoefler Text',
                   fontWeight: 700,
-                  color: 'secondary.main',
+                  color: 'background.highlight',
                   textDecoration: 'none',
                 }}
                 className="logo"
@@ -222,7 +229,7 @@ const Navbar = () => {
                 flexGrow: 1,
                 fontFamily: 'Hoefler Text',
                 fontWeight: 700,
-                color: 'secondary.main',
+                color: 'background.highlight',
                 textDecoration: 'none',
               }}
               className="logo"
@@ -241,8 +248,8 @@ const Navbar = () => {
                       dispatch(uiActions.resetState({}));
                       navigate('/home');
                     }}>
-                      <Logout style={theme.styles.iconSecondary} />
-                      <Typography textAlign="center" sx={{ color: "secondary.main" }}>Logout</Typography>
+                      <Logout style={theme.styles.iconPrimary}/>
+                      <Typography textAlign="center" sx={{ color: "background.highlight" }}>Logout</Typography>
                     </IconButton>
                   </Tooltip>
 
@@ -258,8 +265,8 @@ const Navbar = () => {
                     aria-expanded={userMenuToggle ? 'true' : undefined}
                   >
                     <IconButton>
-                      <Login style={theme.styles.iconSecondary} />
-                      <Typography textAlign="center" sx={{ color: "secondary.main" }}>Login</Typography>
+                      <Login style={theme.styles.iconPrimary} />
+                      <Typography textAlign="center" sx={{ color: "background.highlight" }}>Login</Typography>
                     </IconButton>
                   </Tooltip>
                 )
@@ -270,7 +277,7 @@ const Navbar = () => {
                 sx={{ mt: '45px' }}
                 PaperProps={{
                   sx: {
-                    backgroundColor: "secondary.main"
+                    backgroundColor: "background.secondary"
                   }
                 }}
                 anchorEl={userMenuAnchorEl}
@@ -300,7 +307,7 @@ const Navbar = () => {
         onOpen={() => toggle("navbarToggle")}
         PaperProps={{
           sx: {
-            backgroundColor: "secondary.main"
+            backgroundColor: "background.secondary"
           }
         }}
       >

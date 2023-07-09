@@ -20,7 +20,7 @@ const Task = ({ task, stage }) => {
         <Card
             sx={{
                 width: "100%",
-                bgcolor: "background.lighter",
+                bgcolor: "onBackground.box",
                 cursor: 'move',
                 borderColor: "white"
             }}
@@ -30,14 +30,13 @@ const Task = ({ task, stage }) => {
                     sx={{ p: 0 }}
                 >
                     <List
-                        sx={{ bgcolor: 'background.lighter' }}
                         onClick={viewDetails}
                     >
                         <ListItem
                             secondaryAction={
                                 <>
                                     <Button
-                                        sx={{ bgcolor: 'background.light', borderRadius: 10 }}
+                                        sx={{ bgcolor: 'background.highlight', borderRadius: 10 }}
                                         variant="contained"
                                         startIcon={<CommentIcon style={{ fill: theme.palette.onBackground.main }} />}
                                     >

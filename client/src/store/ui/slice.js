@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const INITIAL_STATE = {
+  isDarkTheme: false,
   notification: null,
   taskboardMenuAnchorEl: null,
   userMenuAnchorEl: null,
@@ -26,11 +27,9 @@ const uiSlice = createSlice({
     ...INITIAL_STATE,
     navbarToggle: false,
     themeColors: {
-      primary: '#001C30',
-      secondary: '#fff',
-      backgroundDark: '#001C30',
-      backgroundLight: '#176B87',
-      backgroundLighter: '#64CCC5',
+      secondary: '#F1F6F9',
+      primary: '#009FBD',
+      highlight: '#212A3E',
       onBackground: '#fff',
     },
   },
@@ -66,6 +65,31 @@ const uiSlice = createSlice({
       for (const [key, value] of Object.entries(INITIAL_STATE)) {
         state[key] = value;
       }
+    },
+    switchTheme(state, action) {
+      let darkColors = {
+        secondary: '#001C30',
+        primary: '#176B87',
+        highlight: '#64CCC5',
+        onBackground: '#fff',
+      }
+
+      let lightColors = {
+        secondary: '#F1F6F9',
+        primary: '#009FBD',
+        highlight: '#212A3E',
+        onBackground: '#fff',
+      }
+
+      if (state.isDarkTheme) {
+        state.themeColors = lightColors
+        state.isDarkTheme = false
+      }
+      else {
+        state.themeColors = darkColors
+        state.isDarkTheme = true
+      }
+
     },
   },
 });
