@@ -13,7 +13,7 @@ router.post('/add', async (req, res) => {
     await saveComment(comment)
 
     const updatedTask = await Task.findById(req.body.taskId).populate("comments")
-    res.status(201).json({data: updatedTask, success: true, message: 'Added Comment'})
+    res.status(201).json({ data: updatedTask, success: true, message: 'Added Comment' })
     console.log("Added Comment")
   } catch (err) {
     res.status(400).json({ success: false, message: err.message })
@@ -23,13 +23,13 @@ router.post('/add', async (req, res) => {
 router.patch('/edit', async (req, res) => {
   try {
     let replacement = {
-      message: req.body.message, 
+      message: req.body.message,
       updatedAt: Date.now()
     }
-    await Comment.updateOne({_id: req.body._id}, replacement)
+    await Comment.updateOne({ _id: req.body._id }, replacement)
 
     const updatedTask = await Task.findById(req.body.taskId).populate("comments")
-    res.json({data: updatedTask, success: true, message: 'Updated Comment'})
+    res.json({ data: updatedTask, success: true, message: 'Updated Comment' })
     console.log("Updated Comment")
   } catch (err) {
     res.status(400).json({ success: false, message: err.message })

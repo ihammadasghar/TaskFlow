@@ -10,7 +10,7 @@ router.get('/list', async (req, res) => {
   try {
     const taskBoards = await TaskBoard.find()
     console.log("Fetched TaskBoard List")
-    res.json({data: taskBoards, success: true, message: "Fetched TaskBoard List"})
+    res.json({ data: taskBoards, success: true, message: "Fetched TaskBoard List" })
   } catch (err) {
     res.status(500).json({ success: false, message: err.message })
   }
@@ -24,26 +24,26 @@ router.post('/details', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Cannot Find TaskBoard' })
     }
     console.log("Fetched TaskBoard")
-    res.json({data: taskBoard, success: true, message: "Fetched TaskBoard"})
+    res.json({ data: taskBoard, success: true, message: "Fetched TaskBoard" })
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message })
   }
-  })
+})
 
 // create taskboard
 router.post('/add', async (req, res) => {
   const taskBoard = new TaskBoard({
-    name: req.body.name,
-    stages: req.body.stages
+    name: req.body.name
   })
   try {
     await saveTaskBoard(taskBoard)
+
     const taskBoardList = await TaskBoard.find()
-    res.status(201).json({data: taskBoardList, success: true, message: 'Added TaskBoard'})
+    res.status(201).json({ data: taskBoardList, success: true, message: 'Added TaskBoard' })
     console.log('Added TaskBoard')
   } catch (err) {
     res.status(400).json({ success: false, message: err.message })
-    console.log(req.body.name)
+    console.log(err.message)
   }
 })
 
@@ -51,12 +51,12 @@ router.post('/add', async (req, res) => {
 router.post('/edit', async (req, res) => {
   try {
     let replacement = {}
-    if(req.body.name) replacement['name'] = req.body.name
-    if(req.body.stages) replacement['stages'] = req.body.stages
+    if (req.body.name) replacement['name'] = req.body.name
+    if (req.body.stages) replacement['stages'] = req.body.stages
 
-    await TaskBoard.updateOne({_id: req.body._id}, replacement)
+    await TaskBoard.updateOne({ _id: req.body._id }, replacement)
     const taskBoardList = await TaskBoard.find()
-    res.json({data: taskBoardList, success: true, message: 'Updated TaskBoard'})
+    res.json({ data: taskBoardList, success: true, message: 'Updated TaskBoard' })
   } catch (err) {
     res.status(400).json({ success: false, message: err.message })
   }
@@ -85,24 +85,24 @@ router.post('/add-task-stage', async (req, res) => {
     await saveTaskStage(taskStage)
 
     const taskBoardDetails = await getTaskBoardDetails(req.body.taskBoardId)
-    res.status(201).json({data: taskBoardDetails, success: true, message: 'Added Task Stage'})
+    res.status(201).json({ data: taskBoardDetails, success: true, message: 'Added Task Stage' })
     console.log('Added Task Stage')
   } catch (err) {
     res.status(400).json({ success: false, message: err.message })
-    console.log(req.body.name)
+    console.log(err.message)
   }
 })
 
 router.post('/edit-task-stage', async (req, res) => {
   try {
     let replacement = {}
-    if(req.body.name) replacement['name'] = req.body.name
-    if(req.body.position) replacement['position'] = req.body.postion
+    if (req.body.name) replacement['name'] = req.body.name
+    if (req.body.position) replacement['position'] = req.body.postion
 
-    await TaskStage.updateOne({_id: req.body._id}, replacement)
+    await TaskStage.updateOne({ _id: req.body._id }, replacement)
 
     const taskBoardDetails = await getTaskBoardDetails(req.body.taskBoardId)
-    res.json({data: taskBoardDetails, success: true, message: 'Updated Task Stage'})
+    res.json({ data: taskBoardDetails, success: true, message: 'Updated Task Stage' })
     console.log('Updated Task Stage')
   } catch (err) {
     res.status(400).json({ success: false, message: err.message })
@@ -111,11 +111,10 @@ router.post('/edit-task-stage', async (req, res) => {
 
 router.post('/remove-task-stage', async (req, res) => {
   try {
-    // delete all tasks in stage
     await removeTaskStage(req.body._id)
 
     const taskBoardDetails = await getTaskBoardDetails(req.body.taskBoardId)
-    res.json({data: taskBoardDetails, success: true, message: 'Deleted Task Stage'})
+    res.json({ data: taskBoardDetails, success: true, message: 'Deleted Task Stage' })
     console.log('Deleted Task Stage')
   } catch (err) {
     res.status(500).json({ success: false, message: err.message })
@@ -124,15 +123,15 @@ router.post('/remove-task-stage', async (req, res) => {
 
 async function getTaskBoardDetails(taskBoardId) {
   let taskBoard = await TaskBoard
-        .findOne({_id: taskBoardId})
-        .populate(
-          {
-            path: 'stages',
-            populate: {
-                path: 'tasks',
-                model: 'Task'
-            }
-          })
+    .findOne({ _id: taskBoardId })
+    .populate(
+      {
+        path: 'stages',
+        populate: {
+          path: 'tasks',
+          model: 'Task'
+        }
+      })
   return taskBoard
 }
 

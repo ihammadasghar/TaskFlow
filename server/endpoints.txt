@@ -2,11 +2,14 @@ api/taskboards/list
 api/taskboards/add
 api/taskboards/edit
 api/taskboards/details
-api/taskboards/delete
+api/taskboards/remove
+api/taskboards/add-task-stage
+api/taskboards/edit-task-stage
+api/taskboards/remove-task-stage
 api/tasks/add
 api/tasks/edit
-api/tasks/delete
+api/tasks/remove
 api/tasks/details
 api/comments/add
 api/comments/edit
-api/comments/delete
+api/comments/remove

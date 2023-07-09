@@ -1,23 +1,23 @@
 const CommentModel = require("../models/Comment")
 const TaskModel = require("../models/Task")
 
-async function saveComment(comment){
+async function saveComment(comment) {
     await comment.save()
-    .then(c => {
-        TaskModel.updateOne(
-            {
-                _id: c.taskId,
-            },
-            {
-                comments: {
-                    $push: c._id
+        .then(c => (
+            TaskModel.updateOne(
+                {
+                    _id: c.taskId,
+                },
+                {
+                    $push: {
+                        comments: c._id
+                    }
                 }
-            }
-        ) 
-    })
+            )
+        ))
 }
 
-async function removeComment(id){
+async function removeComment(id) {
     const c = await CommentModel.findById(id)
     await CommentModel.deleteOne({
         _id: id
@@ -27,11 +27,11 @@ async function removeComment(id){
             _id: c.taskId,
         },
         {
-            comments: {
-                $pull: c._id
+            $pull: {
+                comments: c._id
             }
         }
-    ) 
+    )
 }
 
 module.exports = { saveComment, removeComment }
