@@ -27,7 +27,7 @@ const CommentSection = () => {
                 alignItems: 'center',
                 flexWrap: 'wrap',
             }}>
-                <CommentIcon style={theme.styles.iconOnBackground} />
+                <CommentIcon style={theme.styles.iconPrimary} />
                 <Typography
                     gutterBottom
                     variant="h6"

@@ -6,7 +6,6 @@ import { addTaskBoard, editTaskBoard, getTaskBoardDetails, getTaskBoardList, rem
 import FolderIcon from '@mui/icons-material/Folder';
 import ListIcon from '@mui/icons-material/List';
 import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import { useTheme } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
@@ -55,18 +54,13 @@ const TaskBoardManager = () => {
     return (
         <Container component="main" maxWidth="md">
             <List
-                sx={{ bgcolor: 'background.light' }}
+                sx={{ bgcolor: 'background.primary' }}
             >
                 <ListItem
                     key="taskBoardManagerHeading"
-                    secondaryAction={
-                        <IconButton edge="end" aria-label="add">
-                            <AddIcon />
-                        </IconButton>
-                    }
                 >
                     <ListItemAvatar>
-                        <Avatar>
+                        <Avatar sx={{bgcolor: "background.highlight"}}>
                             <ListIcon />
                         </Avatar>
                     </ListItemAvatar>
@@ -84,7 +78,7 @@ const TaskBoardManager = () => {
                 </ListItem>
             </List>
             <List
-                sx={{ bgcolor: 'background.main' }}
+                sx={{ bgcolor: 'background.primary' }}
             >
 
                 <ListItem key="newTaskFieldListItem">
@@ -129,9 +123,9 @@ const TaskBoardManager = () => {
                                     navigate('/taskboard')
                                 }}
                             >
-                                <Avatar>
-                                    <FolderIcon />
-                                </Avatar>
+                                <Avatar sx={{bgcolor: "background.highlight"}}>
+                                    <FolderIcon/>
+                                </Avatar>                                
                             </ListItemAvatar>
                             {isEditingTaskBoard && t._id === editTaskBoardForm._id ? (
                                 <EditField

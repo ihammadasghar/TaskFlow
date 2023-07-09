@@ -18,9 +18,10 @@ const NewStageCard = () => {
         <Card
             key={`newTaskStage`}
             sx={{
-                bgcolor: "background.main",
+                bgcolor: "background.primary",
                 borderRadius: "3px",
                 mr: 2,
+                my: 2,
                 height: "80vh",
                 minWidth: { xs: "80%", md: "23%" }
             }}
