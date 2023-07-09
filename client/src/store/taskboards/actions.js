@@ -1,22 +1,17 @@
 import { taskBoardActions } from "./slice";
-import { fetchPost } from "../../utils/api";
+import { fetchGet, fetchPost } from "../../utils/api";
 import store from '..';
-import { TASK_INTERVAL } from "../../utils/constants";
 
-const getTaskBoardList = (lastTaskFetchDt, taskboardChanged) => {
+const getTaskBoardList = () => {
   return async (dispatch) => {
-    if (((new Date()) - lastTaskFetchDt) > TASK_INTERVAL || taskboardChanged) {
-      const state = store.getState();
-      const inputData = {
-        taskBoard: state.tasks.choosenTaskboardId
+    try {
+      const response = await fetchGet('/api/taskboards/list');
+      if (response.success) {
+        dispatch(taskBoardActions.setState({ stateName: "allTaskBoards", value: response.data }));
+        console.log("FETCHED_TASKSBOARDS");
       }
-
-      try {
-        const response = await fetchPost('/api/taskboards/list', inputData);
-        dispatch(taskBoardActions.replaceTaskList(response));
-      } catch (err) { console.log("ERROR_FETCHING_TASKS"); }
-    }
-  };
+    } catch (err) { console.log("ERROR_FETCHING_TASKBOARDS"); }
+  }
 };
 
 const getTaskBoardDetails = (taskBoardId) => {
@@ -39,33 +34,52 @@ const getTaskBoardDetails = (taskBoardId) => {
   };
 };
 
-const addTaskBoard = (name) => {
+const addTaskBoard = (taskBoard) => {
   return async (dispatch) => {
     const inputData = {
-      name
+      name: taskBoard.name
     }
     try {
-        const response = await fetchPost('/api/taskboards/add', inputData);
-        if (response.success) {
-            dispatch(taskBoardActions.setState({ stateName: "allTaskBoards", value: response.data }));
-        }
+      const response = await fetchPost('/api/taskboards/add', inputData);
+      if (response.success) {
+        dispatch(taskBoardActions.setState({ stateName: "allTaskBoards", value: response.data }));
+      }
     } catch (err) { console.log("ERROR_ADDING_TASKBOARD"); }
 
   };
 };
 
-const editTaskBoard = (editedTaskBoard) => {
+const removeTaskBoard = (id) => {
   return async (dispatch) => {
     const inputData = {
-      _id: editedTaskBoard.id,
-      name: editedTaskBoard.name,
+      _id: id,
     }
+    try {
+      const response = await fetchPost('/api/taskboards/remove', inputData);
+      if (response.success) {
+        dispatch(taskBoardActions.setState({ stateName: "allTaskBoards", value: response.data }));
+        console.log("DELETED_TASKBOARD");
+      }
+    } catch (err) { console.log("ERROR_DELETING_TASKBOARD"); }
+  }
+};
+
+const editTaskBoard = (editedTaskBoard) => {
+  return async (dispatch) => {
+    const state = store.getState();
+    const inputData = {
+      _id: editedTaskBoard._id,
+    }
+    if (editedTaskBoard.name) inputData['name'] = editedTaskBoard.name;
 
     try {
-        const response = await fetchPost('/api/taskboards/edit', inputData);
-        if (response.success) {
-            dispatch(taskBoardActions.setState({ stateName: "allTaskBoards", value: response.data }));
+      const response = await fetchPost('/api/taskboards/edit', inputData);
+      if (response.success) {
+        dispatch(taskBoardActions.setState({ stateName: "allTaskBoards", value: response.data }));
+        if (state.taskBoards.loadedTaskBoard?._id === editedTaskBoard._id) {
+          dispatch(getTaskBoardDetails(editedTaskBoard._id));
         }
+      }
     } catch (err) { console.log("ERROR_EDITING_TASKBOARD"); }
 
   };
@@ -73,38 +87,42 @@ const editTaskBoard = (editedTaskBoard) => {
 
 const editTask = (editedTask) => {
   return async (dispatch) => {
+    const state = store.getState();
     const inputData = {
-      _id: editedTask.id,
-      taskBoardId: editedTask.taskBoardId,
-      header: editedTask.header,
-      description: editedTask.description,
-      stage: editedTask.stage
+      _id: editedTask._id,
+      taskBoardId: state.taskBoards.loadedTaskBoard._id
     }
+    if (editedTask.header) inputData['header'] = editedTask.header
+    if (editedTask.description) inputData['description'] = editedTask.description
+    if (editedTask.stageId) inputData['stageId'] = editedTask.stageId
 
     try {
-        const response = await fetchPost('/api/tasks/edit', inputData);
-        if (response.success) {
-            dispatch(taskBoardActions.setState({ stateName: "loadedTaskBoard", value: response.data }));
+      const response = await fetchPost('/api/tasks/edit', inputData);
+      console.log(response);
+      if (response.success) {
+        dispatch(taskBoardActions.setState({ stateName: "loadedTaskBoard", value: response.data }));
+        if (editedTask._id === state.taskBoards.loadedTask._id) {
+          dispatch(getTaskDetails(state.taskBoards.loadedTask._id))
         }
-    } catch (err) { console.log("ERROR_EDITING_TASK"); }
+      }
+    } catch (err) { console.log("ERROR_EDITING_TASK"); console.log(err); }
 
   };
 };
 
-const addTask = (header, taskStage, description = null) => {
+const addTask = (newTask) => {
   return async (dispatch) => {
     const state = store.getState();
     const inputData = {
-      header,
-      taskStage,
-      description,
-      taskBoardId: state.taskboards.loadedTaskBoard._id
+      header: newTask.header,
+      stageId: newTask.stageId,
+      taskBoardId: state.taskBoards.loadedTaskBoard._id
     }
     try {
-        const response = await fetchPost('/api/tasks/add', inputData);
-        if (response.success) {
-            dispatch(taskBoardActions.setState({ stateName: "loadedTaskBoard", value: response.data }));
-        }
+      const response = await fetchPost('/api/tasks/add', inputData);
+      if (response.success) {
+        dispatch(taskBoardActions.setState({ stateName: "loadedTaskBoard", value: response.data }));
+      }
     } catch (err) { console.log("ERROR_ADDING_TASK"); }
 
   };
@@ -115,10 +133,10 @@ const getTaskDetails = (taskId) => {
     const inputData = {
       _id: taskId
     }
-
     try {
       const response = await fetchPost('/api/tasks/details', inputData);
       if (response.success) {
+        console.log(response)
         dispatch(taskBoardActions.setState({ stateName: "loadedTask", value: response.data }));
       }
     }
@@ -134,7 +152,7 @@ const addComment = (message) => {
   return async (dispatch) => {
     const state = store.getState();
     const inputData = {
-      taskId: state.taskboards.loadedTask._id,
+      taskId: state.taskBoards.loadedTask._id,
       message
     }
 
@@ -158,27 +176,103 @@ const editComment = (editedComment) => {
     const inputData = {
       _id: editedComment.id,
       message: editedComment.message,
-      taskId: state.taskboards.loadedTask._id
+      taskId: state.taskBoards.loadedTask._id
     }
 
     try {
-        const response = await fetchPost('/api/taskboards/edit', inputData);
-        if (response.success) {
-            dispatch(taskBoardActions.setState({ stateName: "allTaskBoards", value: response.data }));
-        }
+      const response = await fetchPost('/api/taskboards/edit', inputData);
+      if (response.success) {
+        dispatch(taskBoardActions.setState({ stateName: "allTaskBoards", value: response.data }));
+      }
     } catch (err) { console.log("ERROR_EDITING_TASKBOARD"); }
 
   };
 };
 
-export { 
-  getTaskBoardList,  
+const addTaskBoardStage = (taskStage) => {
+  return async (dispatch) => {
+    const state = store.getState();
+    const inputData = {
+      name: taskStage.name,
+      position: state.taskBoards.loadedTaskBoard.stages.length,
+      taskBoardId: state.taskBoards.loadedTaskBoard._id
+    }
+    try {
+      const response = await fetchPost('/api/taskboards/add-task-stage', inputData);
+      if (response.success) {
+        dispatch(taskBoardActions.setState({ stateName: "loadedTaskBoard", value: response.data }));
+      }
+    } catch (err) { console.log("ERROR_ADDING_TASKBOARD_STAGE"); }
+
+  };
+};
+
+const editTaskBoardStage = (taskStage) => {
+  return async (dispatch) => {
+    const state = store.getState();
+    const inputData = {
+      _id: taskStage._id,
+      taskBoardId: state.taskBoards.loadedTaskBoard._id
+    }
+    if (taskStage.name) inputData['name'] = taskStage.name
+    if (taskStage.position) inputData['position'] = taskStage.position
+    try {
+      const response = await fetchPost('/api/taskboards/edit-task-stage', inputData);
+      if (response.success) {
+        dispatch(taskBoardActions.setState({ stateName: "loadedTaskBoard", value: response.data }));
+      }
+    } catch (err) { console.log("ERROR_EDITING_TASKBOARD_STAGE"); }
+
+  };
+};
+
+const removeTaskBoardStage = (id) => {
+  return async (dispatch) => {
+    const state = store.getState();
+    const inputData = {
+      _id: id,
+      taskBoardId: state.taskBoards.loadedTaskBoard._id
+    }
+    try {
+      const response = await fetchPost('/api/taskboards/remove-task-stage', inputData);
+      if (response.success) {
+        dispatch(taskBoardActions.setState({ stateName: "loadedTaskBoard", value: response.data }));
+      }
+    } catch (err) { console.log("ERROR_DELETING_TASKBOARD_STAGE"); }
+
+  };
+};
+
+const removeTask = (id) => {
+  return async (dispatch) => {
+    const state = store.getState();
+    const inputData = {
+      _id: id,
+      taskBoardId: state.taskBoards.loadedTaskBoard._id
+    }
+    try {
+      const response = await fetchPost('/api/tasks/remove', inputData);
+      if (response.success) {
+        dispatch(taskBoardActions.setState({ stateName: "loadedTaskBoard", value: response.data }));
+      }
+    } catch (err) { console.log("ERROR_DELETING_TASK"); }
+
+  };
+};
+
+export {
+  getTaskBoardList,
   getTaskBoardDetails,
-  addTaskBoard, 
-  editTaskBoard, 
+  addTaskBoard,
+  removeTaskBoard,
+  editTaskBoard,
   addTask,
   getTaskDetails,
   editTask,
+  removeTask,
   editComment,
-  addComment
- };
+  addComment,
+  addTaskBoardStage,
+  removeTaskBoardStage,
+  editTaskBoardStage
+};

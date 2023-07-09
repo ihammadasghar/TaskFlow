@@ -6,7 +6,8 @@ const taskBoardsSlice = createSlice({
     allTaskBoards: [],
     loadedTaskboard: null,
     loadedTask: null,
-    lastTaskFetchDt: null
+    lastTaskFetchDt: null,
+    taskDetailsModalToggle: false
   },
   reducers: {
     toggle(state, action) {

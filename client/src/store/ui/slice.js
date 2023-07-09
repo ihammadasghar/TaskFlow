@@ -4,11 +4,20 @@ const INITIAL_STATE = {
   notification: null,
   taskboardMenuAnchorEl: null,
   userMenuAnchorEl: null,
-  editTaskView: false,
+  isEditingTaskBoard: false,
+  isEditingTaskStage: false,
+  isEditingTaskHeader: false,
+  isEditingTaskDescription: false,
   attendanceSignsForm: {},
   loginForm: { username: "", password: "", rememberMe: false },
   editTaskForm: { header: "", description: "" },
-  newCommentMsg: "",
+  taskForm: {},
+  stageForm: { name: "" },
+  taskBoardForm: { name: "" },
+  editTaskBoardForm: { _id: "", name: "" },
+  editTaskStageForm: { name: "" },
+  commentMessage: "",
+  taskDetailsModalToggle: false
 }
 
 const uiSlice = createSlice({
@@ -17,9 +26,11 @@ const uiSlice = createSlice({
     ...INITIAL_STATE,
     navbarToggle: false,
     themeColors: {
-      primary: '#0e2b68',
+      primary: '#001C30',
       secondary: '#fff',
-      background: '#902c54',
+      backgroundDark: '#001C30',
+      backgroundLight: '#176B87',
+      backgroundLighter: '#64CCC5',
       onBackground: '#fff',
     },
   },
@@ -36,7 +47,7 @@ const uiSlice = createSlice({
       }
     },
     setState(state, action) {
-      state[action.payload.name] = action.payload.value;
+      state[action.payload.stateName] = action.payload.value;
     },
     showNotification(state, action) {
       state.notification = {
