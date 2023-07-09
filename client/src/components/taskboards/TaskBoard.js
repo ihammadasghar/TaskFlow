@@ -8,10 +8,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 import TaskDetailModal from "../tasks/TaskDetailModal";
 import Stage from './Stage';
-import NewStageField from './NewStageField';
 import { editTaskBoard, removeTaskBoard } from '../../store/taskboards/actions';
 import { uiActions } from '../../store/ui/slice';
 import EditField from '../utility/EditField';
+import NewStageCard from './NewStageCard';
 
 
 const TaskBoard = () => {
@@ -108,7 +108,7 @@ const TaskBoard = () => {
                 }}
             >
                 {taskStages}
-                <NewStageField />
+                <NewStageCard />
             </Box>
         </Container>
     )
