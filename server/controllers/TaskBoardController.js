@@ -1,6 +1,10 @@
 const TaskBoardModel = require("../models/TaskBoard");
 const { removeManyTaskStage } = require("./TaskStageController");
 
+async function getTaskBoardList() {
+    return await TaskBoardModel.find()
+}
+
 async function removeTaskBoard(id) {
     const t = await TaskBoardModel.findById(id)
 
@@ -12,7 +16,26 @@ async function removeTaskBoard(id) {
 }
 
 async function saveTaskBoard(taskBoard) {
-    await taskBoard.save()
+    const newTaskBoard = new TaskBoardModel(taskBoard)
+    await newTaskBoard.save()
 }
 
-module.exports = { saveTaskBoard, removeTaskBoard }
+async function updateTaskBoard(taskBoard) {
+    TaskBoard.updateOne({ _id: taskBoard._id }, taskBoard)
+}
+
+async function getTaskBoardDetails(id) {
+    let taskBoard = await TaskBoardModel
+        .findById(id)
+        .populate(
+            {
+                path: 'stages',
+                populate: {
+                    path: 'tasks',
+                    model: 'Task'
+                }
+            })
+    return taskBoard
+}
+
+module.exports = { saveTaskBoard, removeTaskBoard, getTaskBoardDetails, getTaskBoardList, updateTaskBoard }

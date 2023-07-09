@@ -2,7 +2,8 @@ const CommentModel = require("../models/Comment")
 const TaskModel = require("../models/Task")
 
 async function saveComment(comment) {
-    await comment.save()
+    const newComment = CommentModel(comment)
+    await newComment.save()
         .then(c => (
             TaskModel.updateOne(
                 {
@@ -15,6 +16,10 @@ async function saveComment(comment) {
                 }
             )
         ))
+}
+
+async function updateComment(comment) {
+    Comment.updateOne({ _id: comment._id }, comment)
 }
 
 async function removeComment(id) {
@@ -34,4 +39,4 @@ async function removeComment(id) {
     )
 }
 
-module.exports = { saveComment, removeComment }
+module.exports = { saveComment, removeComment, updateComment }

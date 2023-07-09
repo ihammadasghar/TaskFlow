@@ -1,14 +1,12 @@
 const express = require('express')
 const router = express.Router()
-const TaskBoard = require('../models/TaskBoard')
-const TaskStage = require('../models/TaskStage')
-const { saveTaskBoard, removeTaskBoard } = require('../controllers/TaskBoardController')
-const { saveTaskStage, removeTaskStage } = require('../controllers/TaskStageController')
+const { saveTaskBoard, removeTaskBoard, getTaskBoardList, getTaskBoardDetails, updateTaskBoard } = require('../controllers/TaskBoardController')
+const { saveTaskStage, removeTaskStage, updateTaskStage } = require('../controllers/TaskStageController')
 
 // get all taskboards
 router.get('/list', async (req, res) => {
   try {
-    const taskBoards = await TaskBoard.find()
+    const taskBoards = await getTaskBoardList()
     console.log("Fetched TaskBoard List")
     res.json({ data: taskBoards, success: true, message: "Fetched TaskBoard List" })
   } catch (err) {
@@ -32,13 +30,13 @@ router.post('/details', async (req, res) => {
 
 // create taskboard
 router.post('/add', async (req, res) => {
-  const taskBoard = new TaskBoard({
+  const taskBoard = {
     name: req.body.name
-  })
+  }
   try {
     await saveTaskBoard(taskBoard)
 
-    const taskBoardList = await TaskBoard.find()
+    const taskBoardList = await getTaskBoardList()
     res.status(201).json({ data: taskBoardList, success: true, message: 'Added TaskBoard' })
     console.log('Added TaskBoard')
   } catch (err) {
@@ -50,12 +48,13 @@ router.post('/add', async (req, res) => {
 // update taskboard
 router.post('/edit', async (req, res) => {
   try {
-    let replacement = {}
+    let replacement = {
+      _id: req.body._id
+    }
     if (req.body.name) replacement['name'] = req.body.name
-    if (req.body.stages) replacement['stages'] = req.body.stages
 
-    await TaskBoard.updateOne({ _id: req.body._id }, replacement)
-    const taskBoardList = await TaskBoard.find()
+    await updateTaskBoard(replacement)
+    const taskBoardList = await getTaskBoardList()
     res.json({ data: taskBoardList, success: true, message: 'Updated TaskBoard' })
   } catch (err) {
     res.status(400).json({ success: false, message: err.message })
@@ -67,7 +66,7 @@ router.post('/remove', async (req, res) => {
   try {
     await removeTaskBoard(req.body._id)
 
-    const taskBoardList = await TaskBoard.find()
+    const taskBoardList = await getTaskBoardList()
     res.json({ data: taskBoardList, success: true, message: 'Deleted TaskBoard' })
   } catch (err) {
     res.status(500).json({ success: false, message: err.message })
@@ -76,11 +75,11 @@ router.post('/remove', async (req, res) => {
 
 // task stage endpoints
 router.post('/add-task-stage', async (req, res) => {
-  const taskStage = new TaskStage({
+  const taskStage = {
     name: req.body.name,
     position: req.body.position,
     taskBoardId: req.body.taskBoardId
-  })
+  }
   try {
     await saveTaskStage(taskStage)
 
@@ -95,11 +94,13 @@ router.post('/add-task-stage', async (req, res) => {
 
 router.post('/edit-task-stage', async (req, res) => {
   try {
-    let replacement = {}
+    let replacement = {
+      _id: req.body._id
+    }
     if (req.body.name) replacement['name'] = req.body.name
     if (req.body.position) replacement['position'] = req.body.postion
 
-    await TaskStage.updateOne({ _id: req.body._id }, replacement)
+    await updateTaskStage(replacement)
 
     const taskBoardDetails = await getTaskBoardDetails(req.body.taskBoardId)
     res.json({ data: taskBoardDetails, success: true, message: 'Updated Task Stage' })
@@ -120,19 +121,5 @@ router.post('/remove-task-stage', async (req, res) => {
     res.status(500).json({ success: false, message: err.message })
   }
 })
-
-async function getTaskBoardDetails(taskBoardId) {
-  let taskBoard = await TaskBoard
-    .findOne({ _id: taskBoardId })
-    .populate(
-      {
-        path: 'stages',
-        populate: {
-          path: 'tasks',
-          model: 'Task'
-        }
-      })
-  return taskBoard
-}
 
 module.exports = router

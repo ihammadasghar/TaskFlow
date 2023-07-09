@@ -38,7 +38,8 @@ async function removeManyTaskStage(taskStageIds) {
 }
 
 async function saveTaskStage(taskStage) {
-    await taskStage.save()
+    const newTaskStage = new TaskStageModel(taskStage)
+    await newTaskStage.save()
         .then(t => (
             TaskBoardModel.updateOne(
                 {
@@ -53,4 +54,8 @@ async function saveTaskStage(taskStage) {
         ))
 }
 
-module.exports = { saveTaskStage, removeTaskStage, removeManyTaskStage }
+async function updateTaskStage(taskStage) {
+    await TaskStageModel.updateOne({ _id: taskStage._id }, taskStage)
+}
+
+module.exports = { saveTaskStage, removeTaskStage, removeManyTaskStage, updateTaskStage }

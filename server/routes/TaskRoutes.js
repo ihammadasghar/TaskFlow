@@ -1,13 +1,12 @@
 const express = require('express')
 const router = express.Router()
-const Task = require('../models/Task')
-const TaskBoard = require('../models/TaskBoard')
-const { saveTask, removeTask, updateTask } = require('../controllers/TaskController')
+const { saveTask, removeTask, updateTask, getTaskDetails } = require('../controllers/TaskController')
+const { getTaskBoardDetails } = require('../controllers/TaskBoardController')
 
 // get task
 router.post('/details', async (req, res) => {
   try {
-    const taskDetails = await Task.findOne({ _id: req.body._id }).populate("comments")
+    const taskDetails = await getTaskDetails(req.body._id)
     res.json({ data: taskDetails, success: true, message: "Fetched Task" })
     console.log("Fetched Task")
   } catch (err) {
@@ -16,10 +15,10 @@ router.post('/details', async (req, res) => {
 })
 
 router.post('/add', async (req, res) => {
-  const task = new Task({
+  const task = {
     header: req.body.header,
     stageId: req.body.stageId,
-  })
+  }
   try {
     await saveTask(task)
 
@@ -63,19 +62,5 @@ router.post('/remove', async (req, res) => {
     res.status(500).json({ success: false, message: err.message })
   }
 })
-
-async function getTaskBoardDetails(taskBoardId) {
-  let taskBoard = await TaskBoard
-    .findOne({ _id: taskBoardId })
-    .populate(
-      {
-        path: 'stages',
-        populate: {
-          path: 'tasks',
-          model: 'Task'
-        }
-      })
-  return taskBoard
-}
 
 module.exports = router
