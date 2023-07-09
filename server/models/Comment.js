@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const commentSchema = new mongoose.Schema({
   message: {
@@ -13,10 +13,13 @@ const commentSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     required: false
+  },
+  taskId: {
+    type: mongoose.Types.ObjectId,
+    required: true,
+    ref: 'Task'
   }
 })
 
-// Index by task for query and createdAt for sorting
-commentSchema.index({task: 1, createdAt: -1})
-
-module.exports = mongoose.model('Comment', commentSchema)
+const CommentModel = mongoose.model('Comment', commentSchema)
+module.exports = CommentModel

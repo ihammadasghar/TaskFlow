@@ -5,16 +5,16 @@ const taskBoardSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  stages: [String],
+  stages: [{
+    type: mongoose.Types.ObjectId,
+    ref: "TaskStage"
+  }],
   createdAt: {
     type: Date,
     required: true,
     default: Date.now
-  },
-  tasks: [{
-    type: mongoose.Types.ObjectId,
-    ref: "Task"
-  }]
+  }
 })
 
-module.exports = mongoose.model('TaskBoard', taskBoardSchema)
+const TaskBoardModel = mongoose.model('TaskBoard', taskBoardSchema)
+module.exports = TaskBoardModel
