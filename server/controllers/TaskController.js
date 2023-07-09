@@ -36,7 +36,8 @@ async function removeManyTask(taskIds) {
 }
 
 async function saveTask(task) {
-    await task.save()
+    const newTask = new TaskModel(task)
+    await newTask.save()
         .then(t => (
             TaskStageModel.updateOne(
                 {
@@ -81,4 +82,10 @@ async function updateTask(task) {
     }
 }
 
-module.exports = { saveTask, removeTask, removeManyTask, updateTask }
+async function getTaskDetails(id) {
+    return await TaskModel
+        .findById(id)
+        .populate("comments")
+}
+
+module.exports = { saveTask, removeTask, removeManyTask, updateTask, getTaskDetails }

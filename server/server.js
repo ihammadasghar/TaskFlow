@@ -11,9 +11,9 @@ db.once("open", () => console.log("Connected to Database"))
 
 app.use(express.json())
 
-const tasksRouter = require('./routes/tasks')
-const taskBoardRouter = require('./routes/taskBoard')
-const commentRouter = require('./routes/comments')
+const tasksRouter = require('./routes/TaskRoutes')
+const taskBoardRouter = require('./routes/TaskBoardRoutes')
+const commentRouter = require('./routes/CommentRoutes')
 
 app.use('/api/tasks', tasksRouter)
 app.use('/api/taskboards', taskBoardRouter)

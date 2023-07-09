@@ -2,17 +2,17 @@ import { useSelector, useDispatch } from 'react-redux';
 import { React, useEffect } from 'react';
 import { Container, Typography, List, ListItem, ListItemAvatar, IconButton, Avatar, ListItemText } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import { editTaskBoard, getTaskBoardDetails, getTaskBoardList, removeTaskBoard } from '../../store/taskboards/actions';
+import { addTaskBoard, editTaskBoard, getTaskBoardDetails, getTaskBoardList, removeTaskBoard } from '../../store/taskboards/actions';
 import FolderIcon from '@mui/icons-material/Folder';
 import ListIcon from '@mui/icons-material/List';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
-import NewTaskBoardField from './NewTaskBoardField';
 import { useTheme } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 import { uiActions } from '../../store/ui/slice';
 import EditField from '../utility/EditField';
+import NewField from '../utility/NewField';
 
 const TaskBoardManager = () => {
     const dispatch = useDispatch();
@@ -25,7 +25,7 @@ const TaskBoardManager = () => {
     }, [dispatch]);
 
     const isEditingTaskBoard = useSelector((state) => state.ui.isEditingTaskBoard);
-    const taskBoardForm = useSelector((state) => state.ui.editTaskBoardForm);
+    const editTaskBoardForm = useSelector((state) => state.ui.editTaskBoardForm);
     const editNameSubmit = (event) => {
         event.preventDefault();
         dispatch(uiActions.setState({ stateName: "isEditingTaskBoard", value: false }));
@@ -42,6 +42,14 @@ const TaskBoardManager = () => {
     const switchToEditNameView = (id, name) => {
         dispatch(uiActions.setState({ stateName: "editTaskBoardForm", value: { _id: id, name } }));
         dispatch(uiActions.setState({ stateName: "isEditingTaskBoard", value: true }));
+    }
+
+    const taskBoardForm = useSelector((state) => state.ui.taskBoardForm);
+    const addTaskBoardHandleChange = (field, value) => dispatch(uiActions.setFormValue({ form: "taskBoardForm", field: field, value: value }));
+    const addTaskBoardSubmit = (event) => {
+        event.preventDefault();
+        dispatch(addTaskBoard({ name: taskBoardForm.name }));
+        dispatch(uiActions.setFormValue({ form: "taskBoardForm", field: 'name', value: "" }));
     }
 
     return (
@@ -80,7 +88,13 @@ const TaskBoardManager = () => {
             >
 
                 <ListItem key="newTaskFieldListItem">
-                    <NewTaskBoardField />
+                <NewField
+                    placeholder="Type a name"
+                    name={"name"}
+                    value={taskBoardForm["name"]}
+                    handleChangeFunc={addTaskBoardHandleChange}
+                    submitFunc={addTaskBoardSubmit}
+                />
                 </ListItem>
 
                 {allTaskBoards.length !== 0 ?
@@ -89,9 +103,11 @@ const TaskBoardManager = () => {
                             key={`taskBoard${t._id}ListItem`}
                             secondaryAction={
                                 <>
-                                    <IconButton aria-label="edit">
+                                    <IconButton 
+                                        aria-label="edit"
+                                        onClick={() => switchToEditNameView(t._id, t.name)}
+                                    >
                                         <EditIcon
-                                            onClick={() => switchToEditNameView(t._id, t.name)}
                                             style={{ fill: theme.palette.onBackground.main }}
                                         />
                                     </IconButton>
@@ -117,10 +133,10 @@ const TaskBoardManager = () => {
                                     <FolderIcon />
                                 </Avatar>
                             </ListItemAvatar>
-                            {isEditingTaskBoard && t._id === taskBoardForm._id ? (
+                            {isEditingTaskBoard && t._id === editTaskBoardForm._id ? (
                                 <EditField
                                     name={"name"}
-                                    value={taskBoardForm.name}
+                                    value={editTaskBoardForm.name}
                                     handleChangeFunc={editNameHandleChange}
                                     submitFunc={editNameSubmit}
                                 />

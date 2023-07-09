@@ -1,15 +1,15 @@
 import { useDispatch, useSelector } from "react-redux";
-import { editTaskBoardStage, removeTaskBoardStage } from "../../store/taskboards/actions";
+import { addTask, editTaskBoardStage, removeTaskBoardStage } from "../../store/taskboards/actions";
 
 import { Typography, Card, CardContent, List, ListItem, ListItemText, IconButton } from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2';
 
-import NewTaskField from "../tasks/NewTaskField";
 import Task from "../tasks/Task";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useTheme } from "@emotion/react";
 import { uiActions } from "../../store/ui/slice";
 import EditField from "../utility/EditField";
+import NewField from "../utility/NewField";
 
 const Stage = ({ stage }) => {
     const dispatch = useDispatch();
@@ -36,6 +36,15 @@ const Stage = ({ stage }) => {
     const switchToEditNameView = () => {
         dispatch(uiActions.setState({ stateName: "editTaskStageForm", value: { _id: stage?._id, name: stage?.name } }));
         dispatch(uiActions.setState({ stateName: "isEditingTaskStage", value: true }));
+    }
+
+
+    const taskForm = useSelector((state) => state.ui.taskForm);
+    const addTaskHandleChange = (field, value) => dispatch(uiActions.setFormValue({ form: "taskForm", field: field, value: value }));
+    const addTaskSubmit = (event) => {
+        event.preventDefault();
+        dispatch(addTask({ header: taskForm[`stage${stage._id}`], description: "", stageId: stage._id }));
+        dispatch(uiActions.setFormValue({ form: "taskForm", field: `stage${stage._id}`, value: "" }));
     }
 
     return (
@@ -98,7 +107,13 @@ const Stage = ({ stage }) => {
 
                     </ListItem>
                     <ListItem key={`addtask${stage.position}`}>
-                        {canAddTask && <NewTaskField stageId={stage._id} />}
+                        {canAddTask && <NewField
+                            placeholder="Type a new task"
+                            name={`stage${stage._id}`}
+                            value={taskForm[`stage${stage._id}`]}
+                            handleChangeFunc={addTaskHandleChange}
+                            submitFunc={addTaskSubmit}
+                        />}
                     </ListItem>
 
                     {tasks.length !== 0 ?
