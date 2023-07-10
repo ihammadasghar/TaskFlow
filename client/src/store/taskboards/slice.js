@@ -4,7 +4,7 @@ const taskBoardsSlice = createSlice({
   name: "taskBoards",
   initialState: {
     allTaskBoards: [],
-    loadedTaskboard: null,
+    loadedTaskBoard: null,
     loadedTask: null,
     lastTaskFetchDt: null,
     taskDetailsModalToggle: false
@@ -16,12 +16,26 @@ const taskBoardsSlice = createSlice({
     setState(state, action) {
       state[action.payload.stateName] = action.payload.value;
     },
-    replaceTaskList(state, action) {
-      state.allTasks = action.payload.data;
-      state.lastTaskFetchDt = new Date();
+    removeTaskFromStage(state, action){
 
-      state.loadedTaskboardId = state.choosenTaskboardId;
-      console.log("Last Task Fetch:", state.lastTaskFetchDt);
+    },
+    moveTask(state, action){
+      let taskId = action.payload.taskId
+      let stagePos = action.payload.stagePosition
+      let updateBy = action.payload.updateBy
+
+      let indexOfTask;
+      for(let i = 0; i < state.loadedTaskBoard.stages[stagePos].tasks.length; i++){
+        if(state.loadedTaskBoard.stages[stagePos].tasks[i]._id === taskId) {
+          indexOfTask = i
+          console.log("Task Found")
+          console.log(indexOfTask)
+        }
+      }
+      const task = state.loadedTaskBoard.stages[stagePos].tasks.splice(indexOfTask, 1)[0];
+      task.stageId = state.loadedTaskBoard.stages[stagePos + updateBy]
+      state.loadedTaskBoard.stages[stagePos + updateBy].tasks.push(task)
+
     }
   },
 });

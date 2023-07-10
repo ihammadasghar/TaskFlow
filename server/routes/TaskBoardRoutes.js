@@ -47,6 +47,7 @@ router.post('/add', async (req, res) => {
 
 // update taskboard
 router.post('/edit', async (req, res) => {
+  console.log(req.body)
   try {
     let replacement = {
       _id: req.body._id

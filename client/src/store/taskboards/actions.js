@@ -5,6 +5,7 @@ import store from '..';
 const getTaskBoardList = () => {
   return async (dispatch) => {
     try {
+      dispatch(taskBoardActions.setState({stateName: "allTaskBoards", value: []}))
       const response = await fetchGet('/api/taskboards/list');
       if (response.success) {
         dispatch(taskBoardActions.setState({ stateName: "allTaskBoards", value: response.data }));
@@ -21,6 +22,7 @@ const getTaskBoardDetails = (taskBoardId) => {
     }
 
     try {
+      dispatch(taskBoardActions.setState({stateName: "loadedTaskBoard", value: null}))
       const response = await fetchPost('/api/taskboards/details', inputData);
       if (response.success) {
         dispatch(taskBoardActions.setState({ stateName: "loadedTaskBoard", value: response.data }));
@@ -40,6 +42,7 @@ const addTaskBoard = (taskBoard) => {
       name: taskBoard.name
     }
     try {
+      dispatch(taskBoardActions.setState({stateName: "allTaskBoards", value: []}))
       const response = await fetchPost('/api/taskboards/add', inputData);
       if (response.success) {
         dispatch(taskBoardActions.setState({ stateName: "allTaskBoards", value: response.data }));
@@ -55,6 +58,7 @@ const removeTaskBoard = (id) => {
       _id: id,
     }
     try {
+      dispatch(taskBoardActions.setState({stateName: "allTaskBoards", value: []}))
       const response = await fetchPost('/api/taskboards/remove', inputData);
       if (response.success) {
         dispatch(taskBoardActions.setState({ stateName: "allTaskBoards", value: response.data }));
@@ -73,6 +77,7 @@ const editTaskBoard = (editedTaskBoard) => {
     if (editedTaskBoard.name) inputData['name'] = editedTaskBoard.name;
 
     try {
+      dispatch(taskBoardActions.setState({stateName: "allTaskBoards", value: []}))
       const response = await fetchPost('/api/taskboards/edit', inputData);
       if (response.success) {
         dispatch(taskBoardActions.setState({ stateName: "allTaskBoards", value: response.data }));
@@ -85,7 +90,7 @@ const editTaskBoard = (editedTaskBoard) => {
   };
 };
 
-const editTask = (editedTask) => {
+const editTask = (editedTask, refreshTaskBoard = true) => {
   return async (dispatch) => {
     const state = store.getState();
     const inputData = {
@@ -97,9 +102,10 @@ const editTask = (editedTask) => {
     if (editedTask.stageId) inputData['stageId'] = editedTask.stageId
 
     try {
+      if(refreshTaskBoard)  dispatch(taskBoardActions.setState({stateName: "loadedTaskBoard", value: null}))
       const response = await fetchPost('/api/tasks/edit', inputData);
       console.log(response);
-      if (response.success) {
+      if (response.success && refreshTaskBoard) {
         dispatch(taskBoardActions.setState({ stateName: "loadedTaskBoard", value: response.data }));
         if (editedTask._id === state.taskBoards.loadedTask._id) {
           dispatch(getTaskDetails(state.taskBoards.loadedTask._id))
@@ -119,6 +125,7 @@ const addTask = (newTask) => {
       taskBoardId: state.taskBoards.loadedTaskBoard._id
     }
     try {
+      dispatch(taskBoardActions.setState({stateName: "loadedTaskBoard", value: null}))
       const response = await fetchPost('/api/tasks/add', inputData);
       if (response.success) {
         dispatch(taskBoardActions.setState({ stateName: "loadedTaskBoard", value: response.data }));
@@ -134,6 +141,7 @@ const getTaskDetails = (taskId) => {
       _id: taskId
     }
     try {
+      dispatch(taskBoardActions.setState({stateName: "loadedTask", value: null}))
       const response = await fetchPost('/api/tasks/details', inputData);
       if (response.success) {
         console.log(response)
@@ -157,6 +165,7 @@ const addComment = (message) => {
     }
 
     try {
+      dispatch(taskBoardActions.setState({stateName: "loadedTask", value: null}))
       const response = await fetchPost('/api/comments/add', inputData);
       if (response.success) {
         dispatch(taskBoardActions.setState({ stateName: "loadedTask", value: response.data }));
@@ -180,9 +189,10 @@ const editComment = (editedComment) => {
     }
 
     try {
+      dispatch(taskBoardActions.setState({stateName: "loadedTask", value: null}))
       const response = await fetchPost('/api/taskboards/edit', inputData);
       if (response.success) {
-        dispatch(taskBoardActions.setState({ stateName: "allTaskBoards", value: response.data }));
+        dispatch(taskBoardActions.setState({ stateName: "loadedTask", value: response.data }));
       }
     } catch (err) { console.log("ERROR_EDITING_TASKBOARD"); }
 
@@ -198,6 +208,7 @@ const addTaskBoardStage = (taskStage) => {
       taskBoardId: state.taskBoards.loadedTaskBoard._id
     }
     try {
+      dispatch(taskBoardActions.setState({stateName: "loadedTaskBoard", value: null}))
       const response = await fetchPost('/api/taskboards/add-task-stage', inputData);
       if (response.success) {
         dispatch(taskBoardActions.setState({ stateName: "loadedTaskBoard", value: response.data }));
@@ -217,6 +228,7 @@ const editTaskBoardStage = (taskStage) => {
     if (taskStage.name) inputData['name'] = taskStage.name
     if (taskStage.position) inputData['position'] = taskStage.position
     try {
+      dispatch(taskBoardActions.setState({stateName: "loadedTaskBoard", value: null}))
       const response = await fetchPost('/api/taskboards/edit-task-stage', inputData);
       if (response.success) {
         dispatch(taskBoardActions.setState({ stateName: "loadedTaskBoard", value: response.data }));
@@ -234,6 +246,7 @@ const removeTaskBoardStage = (id) => {
       taskBoardId: state.taskBoards.loadedTaskBoard._id
     }
     try {
+      dispatch(taskBoardActions.setState({stateName: "loadedTaskBoard", value: null}))
       const response = await fetchPost('/api/taskboards/remove-task-stage', inputData);
       if (response.success) {
         dispatch(taskBoardActions.setState({ stateName: "loadedTaskBoard", value: response.data }));
@@ -251,6 +264,7 @@ const removeTask = (id) => {
       taskBoardId: state.taskBoards.loadedTaskBoard._id
     }
     try {
+      dispatch(taskBoardActions.setState({stateName: "loadedTaskBoard", value: null}))
       const response = await fetchPost('/api/tasks/remove', inputData);
       if (response.success) {
         dispatch(taskBoardActions.setState({ stateName: "loadedTaskBoard", value: response.data }));

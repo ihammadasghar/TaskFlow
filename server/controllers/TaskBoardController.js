@@ -21,7 +21,7 @@ async function saveTaskBoard(taskBoard) {
 }
 
 async function updateTaskBoard(taskBoard) {
-    TaskBoard.updateOne({ _id: taskBoard._id }, taskBoard)
+    await TaskBoardModel.updateOne({ _id: taskBoard._id }, taskBoard)
 }
 
 async function getTaskBoardDetails(id) {
