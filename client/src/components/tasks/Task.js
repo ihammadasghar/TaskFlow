@@ -5,16 +5,20 @@ import { ArrowForward, ArrowBack, Comment as CommentIcon } from '@mui/icons-mate
 import { editTask, getTaskDetails } from "../../store/taskboards/actions";
 import { useTheme } from "@emotion/react";
 import { uiActions } from "../../store/ui/slice";
+import { taskBoardActions } from "../../store/taskboards/slice";
 
 const Task = ({ task, stage }) => {
     const dispatch = useDispatch();
     const theme = useTheme();
     const taskBoard = useSelector((state) => state.taskBoards.loadedTaskBoard);
 
-    const updateStage = (updateBy) => dispatch(editTask({ _id: task._id, stageId: taskBoard.stages[stage.position + updateBy]._id }));
+    const updateStage = (updateBy) => {
+        dispatch(taskBoardActions.moveTask({taskId: task._id, stagePosition: stage.position, updateBy}))
+        dispatch(editTask({ _id: task._id, stageId: taskBoard.stages[stage.position + updateBy]._id }, false))
+    }
     const viewDetails = () => {
         dispatch(getTaskDetails(task._id))
-        dispatch(uiActions.toggle("taskDetailsModalToggle"));
+        dispatch(uiActions.toggle("taskDetailsModalToggle"))
     }
     return (
         <Card

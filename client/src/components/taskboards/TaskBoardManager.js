@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { React, useEffect } from 'react';
-import { Container, Typography, List, ListItem, ListItemAvatar, IconButton, Avatar, ListItemText } from '@mui/material';
+import { Container, Typography, List, ListItem, ListItemAvatar, IconButton, Avatar, ListItemText, Backdrop, CircularProgress } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { addTaskBoard, editTaskBoard, getTaskBoardDetails, getTaskBoardList, removeTaskBoard } from '../../store/taskboards/actions';
 import FolderIcon from '@mui/icons-material/Folder';
@@ -31,8 +31,8 @@ const TaskBoardManager = () => {
         dispatch(
             editTaskBoard(
                 {
-                    _id: taskBoardForm._id,
-                    name: taskBoardForm.name
+                    _id: editTaskBoardForm._id,
+                    name: editTaskBoardForm.name
                 }
             )
         );
@@ -53,118 +53,134 @@ const TaskBoardManager = () => {
 
     return (
         <Container component="main" maxWidth="md">
-            <List
-                sx={{ bgcolor: 'background.primary' }}
-            >
-                <ListItem
-                    key="taskBoardManagerHeading"
-                >
-                    <ListItemAvatar>
-                        <Avatar sx={{bgcolor: "background.highlight"}}>
-                            <ListIcon />
-                        </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                        disableTypography
-                        color="onBackground.main"
-                        primary={
-                            <Typography
-                                color="onBackground.main"
-                                variant="h6">
-                                Manage TaskBoards
-                            </Typography>
-                        }
-                    />
-                </ListItem>
-            </List>
-            <List
-                sx={{ bgcolor: 'background.primary' }}
-            >
-
-                <ListItem key="newTaskFieldListItem">
-                <NewField
-                    placeholder="Type a name"
-                    name={"name"}
-                    value={taskBoardForm["name"]}
-                    handleChangeFunc={addTaskBoardHandleChange}
-                    submitFunc={addTaskBoardSubmit}
-                />
-                </ListItem>
-
-                {allTaskBoards.length !== 0 ?
-                    (allTaskBoards.map((t) => (
-                        <ListItem
-                            key={`taskBoard${t._id}ListItem`}
-                            secondaryAction={
-                                <>
-                                    <IconButton 
-                                        aria-label="edit"
-                                        onClick={() => switchToEditNameView(t._id, t.name)}
-                                    >
-                                        <EditIcon
-                                            style={{ fill: theme.palette.onBackground.main }}
-                                        />
-                                    </IconButton>
-                                    <IconButton
-                                        edge="end"
-                                        aria-label="delete"
-                                        onClick={() => dispatch(removeTaskBoard(t._id))}
-                                    >
-                                        <DeleteIcon
-                                            style={{ fill: theme.palette.onBackground.main }}
-                                        />
-                                    </IconButton>
-                                </>
-                            }
+            {
+                allTaskBoards.length !== 0 ? (
+                    <>
+                        <List
+                            sx={{ bgcolor: 'background.primary' }}
                         >
-                            <ListItemAvatar
-                                onClick={() => {
-                                    dispatch(getTaskBoardDetails(t._id))
-                                    navigate('/taskboard')
-                                }}
+                            <ListItem
+                                key="taskBoardManagerHeading"
                             >
-                                <Avatar sx={{bgcolor: "background.highlight"}}>
-                                    <FolderIcon/>
-                                </Avatar>                                
-                            </ListItemAvatar>
-                            {isEditingTaskBoard && t._id === editTaskBoardForm._id ? (
-                                <EditField
-                                    name={"name"}
-                                    value={editTaskBoardForm.name}
-                                    handleChangeFunc={editNameHandleChange}
-                                    submitFunc={editNameSubmit}
+                                <ListItemAvatar>
+                                    <Avatar sx={{ bgcolor: "background.highlight" }}>
+                                        <ListIcon />
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText
+                                    disableTypography
+                                    color="onBackground.main"
+                                    primary={
+                                        <Typography
+                                            color="onBackground.main"
+                                            variant="h6">
+                                            Manage TaskBoards
+                                        </Typography>
+                                    }
                                 />
-                            )
-                                :
-                                (
+                            </ListItem>
+                        </List>
+                        <List
+                            sx={{ bgcolor: 'background.primary' }}
+                        >
 
-                                    <ListItemText
-                                        onClick={() => {
-                                            dispatch(getTaskBoardDetails(t._id))
-                                            navigate('/taskboard')
-                                        }}
-                                        color="onBackground.main"
-                                        primary={
-                                            <Typography
-                                                color="onBackground.main"
-                                            >
-                                                {t.name}
-                                            </Typography>
+                            <ListItem key="newTaskFieldListItem">
+                                <NewField
+                                    placeholder="Type a name"
+                                    name={"name"}
+                                    value={taskBoardForm["name"]}
+                                    handleChangeFunc={addTaskBoardHandleChange}
+                                    submitFunc={addTaskBoardSubmit}
+                                />
+                            </ListItem>
+
+                            {allTaskBoards.length !== 0 ?
+                                (allTaskBoards.map((t) => (
+                                    <ListItem
+                                        key={`taskBoard${t._id}ListItem`}
+                                        secondaryAction={
+                                            <>
+                                                <IconButton
+                                                    aria-label="edit"
+                                                    onClick={() => switchToEditNameView(t._id, t.name)}
+                                                >
+                                                    <EditIcon
+                                                        style={{ fill: theme.palette.onBackground.main }}
+                                                    />
+                                                </IconButton>
+                                                <IconButton
+                                                    edge="end"
+                                                    aria-label="delete"
+                                                    onClick={() => dispatch(removeTaskBoard(t._id))}
+                                                >
+                                                    <DeleteIcon
+                                                        style={{ fill: theme.palette.onBackground.main }}
+                                                    />
+                                                </IconButton>
+                                            </>
                                         }
-                                    />
+                                    >
+                                        <ListItemAvatar
+                                            onClick={() => {
+                                                dispatch(getTaskBoardDetails(t._id))
+                                                navigate('/taskboard')
+                                            }}
+                                        >
+                                            <Avatar sx={{ bgcolor: "background.highlight" }}>
+                                                <FolderIcon />
+                                            </Avatar>
+                                        </ListItemAvatar>
+                                        {isEditingTaskBoard && t._id === editTaskBoardForm._id ? (
+                                            <EditField
+                                                name={"name"}
+                                                value={editTaskBoardForm.name}
+                                                handleChangeFunc={editNameHandleChange}
+                                                submitFunc={editNameSubmit}
+                                            />
+                                        )
+                                            :
+                                            (
+
+                                                <ListItemText
+                                                    onClick={() => {
+                                                        dispatch(getTaskBoardDetails(t._id))
+                                                        navigate('/taskboard')
+                                                    }}
+                                                    color="onBackground.main"
+                                                    primary={
+                                                        <Typography
+                                                            color="onBackground.main"
+                                                        >
+                                                            {t.name}
+                                                        </Typography>
+                                                    }
+                                                />
 
 
-                                )}
-                        </ListItem>
+                                            )}
+                                    </ListItem>
 
-                    ))) :
+                                ))) :
+                                (
+                                    <Grid xs={12}>
+                                        <Typography gutterBottom variant="h6" color="onBackground.main" component="div" sx={{ my: 5 }} align="center">No TaskBoards</Typography>
+                                    </Grid>
+                                )
+                            }
+                        </List>
+                    </>
+                )
+                    :
                     (
-                        <Grid xs={12}>
-                            <Typography gutterBottom variant="h6" color="onBackground.main" component="div" sx={{ my: 5 }} align="center">No TaskBoards</Typography>
-                        </Grid>
+                        <Backdrop
+                            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                            open={true}
+                        >
+                            <CircularProgress color="primary" />
+                        </Backdrop>
                     )
-                }
-            </List>
+            }
+
         </Container >
     )
 }

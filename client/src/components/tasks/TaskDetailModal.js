@@ -2,7 +2,7 @@ import { useTheme } from "@emotion/react";
 import { useDispatch, useSelector } from "react-redux";
 import { editTask, removeTask } from "../../store/taskboards/actions";
 
-import { IconButton, Container, Modal, Card, CardContent, Typography, List, ListItem, ListItemText } from "@mui/material";
+import { IconButton, Container, Modal, Card, CardContent, Typography, List, ListItem, ListItemText, CircularProgress, Backdrop } from "@mui/material";
 import CommentSection from "../comments/CommentSection";
 import { uiActions } from "../../store/ui/slice";
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -13,7 +13,7 @@ const style = {
     position: 'absolute',
     transform: 'translate(-50%, -20%)',
     width: { xs: "90%", md: "50%" },
-    bgcolor: 'background.secondary',
+    bgcolor: 'background.primary',
     boxShadow: 24,
     top: '20%',
     left: '50%',
@@ -57,116 +57,131 @@ const TaskDetailModal = () => {
     return (
         <Modal
             open={isOpen}
-            onClose={() => { dispatch(uiActions.toggle("taskDetailsModalToggle")); dispatch(uiActions.setState({ name: "editTaskView", value: false })) }}
+            onClose={() => { 
+                dispatch(uiActions.toggle("taskDetailsModalToggle"))
+                dispatch(uiActions.setState({ name: "editTaskView", value: false }))
+                }}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
             sx={{ bgcolor: "grey" }}
         >
-            <Container component="main" maxWidth="sm">
-                <Card sx={style}>
-                    <CardContent>
-                        <Card
-                            sx={{
-                                bgcolor: 'background.highlight'
-                            }}
-                        >
-                            <CardContent
-                                sx={{ p: 0 }}
-                            >
-                                <List
-                                    sx={{ bgcolor: 'background.highlight' }}
+            {
+                task ? (
+                    <Container component="main" maxWidth="sm">
+                        <Card sx={style}>
+                            <CardContent>
+                                <Card
+                                    sx={{
+                                        bgcolor: 'background.highlight'
+                                    }}
                                 >
-                                    <ListItem
-                                        secondaryAction={
-                                            <>
-                                                <IconButton
-                                                    edge="end"
-                                                    aria-label="delete"
-                                                    onClick={() => dispatch(removeTask(task._id))}
-                                                >
-                                                    <DeleteIcon
-                                                        style={{ fill: theme.palette.onBackground.main }}
-                                                    />
-                                                </IconButton>
-                                            </>
-                                        }
+                                    <CardContent
+                                        sx={{ p: 0 }}
                                     >
-                                        {isEditingTaskHeader ? (
-                                            <EditField
-                                                name={"header"}
-                                                value={taskForm.name}
-                                                handleChangeFunc={editHeaderHandleChange}
-                                                submitFunc={editHeaderSubmit}
-                                            />
-                                        )
-                                            :
-                                            (
+                                        <List>
+                                            <ListItem
+                                                secondaryAction={
+                                                    <>
+                                                        <IconButton
+                                                            edge="end"
+                                                            aria-label="delete"
+                                                            onClick={() => dispatch(removeTask(task._id))}
+                                                        >
+                                                            <DeleteIcon
+                                                                style={{ fill: theme.palette.onBackground.main }}
+                                                            />
+                                                        </IconButton>
+                                                    </>
+                                                }
+                                            >
+                                                {isEditingTaskHeader ? (
+                                                    <EditField
+                                                        name={"header"}
+                                                        value={taskForm.name}
+                                                        handleChangeFunc={editHeaderHandleChange}
+                                                        submitFunc={editHeaderSubmit}
+                                                    />
+                                                )
+                                                    :
+                                                    (
+                                                        <ListItemText
+                                                            onClick={switchToEditHeaderView}
+                                                            disableTypography
+                                                            color="onBackground.main"
+                                                            primary={
+                                                                <Typography
+                                                                    color="onBackground.main"
+                                                                    component="b"
+                                                                    variant="p">
+                                                                    {task && task.header}
+                                                                </Typography>
+                                                            }
+                                                        />
+
+                                                    )
+                                                }
+
+                                            </ListItem>
+
+                                            <ListItem>
+                                                {isEditingTaskDescription ? (
+                                                    <EditDescriptionField task={task} />
+                                                )
+                                                    :
+                                                    (
+                                                        <ListItemText
+                                                            onClick={switchToEditDescriptionView}
+                                                            disableTypography
+                                                            color="onBackground.main"
+                                                            primary={
+                                                                <Typography
+                                                                    color="onBackground.main"
+                                                                    variant="p">
+                                                                    {task && task.description}
+                                                                </Typography>
+                                                            }
+                                                        />
+
+                                                    )
+                                                }
+
+                                            </ListItem>
+
+                                            <ListItem>
+
                                                 <ListItemText
-                                                    onClick={switchToEditHeaderView}
                                                     disableTypography
                                                     color="onBackground.main"
-                                                    primary={
-                                                        <Typography
-                                                            color="onBackground.main"
-                                                            component="b"
-                                                            variant="p">
-                                                            {task && task.header}
+                                                    primary={task && task.updatedAt ?
+                                                        <Typography variant="p" color="onBackground.main">
+                                                            Last updated at {task.updatedAt}
+                                                        </Typography>
+                                                        :
+                                                        <Typography variant="p" color="onBackground.dim">
+                                                            Created at {task && task.createdAt}
                                                         </Typography>
                                                     }
                                                 />
-
-                                            )
-                                        }
-
-                                    </ListItem>
-
-                                    <ListItem>
-                                        {isEditingTaskDescription ? (
-                                            <EditDescriptionField task={task} />
-                                        )
-                                            :
-                                            (
-                                                <ListItemText
-                                                    onClick={switchToEditDescriptionView}
-                                                    disableTypography
-                                                    color="onBackground.main"
-                                                    primary={
-                                                        <Typography
-                                                            color="onBackground.main"
-                                                            variant="p">
-                                                            {task && task.description}
-                                                        </Typography>
-                                                    }
-                                                />
-
-                                            )
-                                        }
-
-                                    </ListItem>
-
-                                    <ListItem>
-
-                                        <ListItemText
-                                            disableTypography
-                                            color="onBackground.main"
-                                            primary={task && task.updatedAt ?
-                                                <Typography variant="p" color="onBackground.main">
-                                                    Last updated at {task.updatedAt}
-                                                </Typography>
-                                                :
-                                                <Typography variant="p" color="onBackground.dim">
-                                                    Created at {task && task.createdAt}
-                                                </Typography>
-                                            }
-                                        />
-                                    </ListItem>
-                                </List>
+                                            </ListItem>
+                                        </List>
+                                    </CardContent>
+                                </Card>
+                                {task && <CommentSection />}
                             </CardContent>
                         </Card>
-                        {task && <CommentSection />}
-                    </CardContent>
-                </Card>
-            </Container>
+                    </Container>
+                )
+                    :
+                    (
+                        <Backdrop
+                            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                            open={true}
+                        >
+                            <CircularProgress color="primary" />
+                        </Backdrop>
+                    )
+            }
+
         </Modal>
     )
 }

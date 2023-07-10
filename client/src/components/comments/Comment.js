@@ -29,7 +29,7 @@ const Comment = ({ comment }) => {
             <Card
                 sx={{
                     width: 100 + "%",
-                    bgcolor: "background.lighter"
+                    bgcolor: "background.highlight"
                 }}
             >
                 <CardActionArea>
