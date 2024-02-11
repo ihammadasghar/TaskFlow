@@ -1,7 +1,11 @@
 # TaskFlow
 Effortlessly organize, prioritize, and conquer tasks with the all-in-one task manager app powered by Express.js, Node.js, React, Redux, and MongoDB.
 
-## Setup:
+![TaskBoard](https://github.com/ihammadasghar/TaskFlow/blob/add-screenshots/screenshots/Taskboard.png)
+![Manager](https://github.com/ihammadasghar/TaskFlow/blob/add-screenshots/screenshots/SwitchThemes.png)
+![Task-Details](https://github.com/ihammadasghar/TaskFlow/blob/add-screenshots/screenshots/TaskDetails.png)
+
+### Setup:
 1. Clone the Repository
 ```
 https://github.com/ihammadasghar/TaskFlow.git
@@ -15,7 +19,10 @@ DATABASE_URL="URL"
 
 3. Download all the dependencies:
 ```
-cd TaskFlow
+cd TaskFlow\client
+npm install
+
+cd TaskFlow\server
 npm install
 ```
 
