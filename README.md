@@ -5,26 +5,33 @@ Effortlessly organize, prioritize, and conquer tasks with the all-in-one task ma
 ![Manager](https://github.com/ihammadasghar/TaskFlow/blob/add-screenshots/screenshots/SwitchThemes.png)
 ![Task-Details](https://github.com/ihammadasghar/TaskFlow/blob/add-screenshots/screenshots/TaskDetails.png)
 
-### Setup:
+### Try it out
 1. Clone the Repository
 ```
-https://github.com/ihammadasghar/TaskFlow.git
+git clone https://github.com/ihammadasghar/TaskFlow.git
 ```
 
-2. Set environment variables ".env" file in the root
+2. Set environment variables by creating a ".env" file in the `taskflow/server/` directory containing:
 ```
-REACT_APP_ENV="DEV"
-DATABASE_URL="URL"
+REACT_APP_ENV=DEV
+DATABASE_URL=mongodb+srv://guest:guestattaskflow@taskflowcluster.4pdqme2.mongodb.net/?retryWrites=true&w=majority
 ``` 
 
-3. Download all the dependencies:
+3. Start the api server:
+```
+cd TaskFlow\server
+npm install
+npm start
+```
+
+4. Lauch the app
 ```
 cd TaskFlow\client
 npm install
-
-cd TaskFlow\server
-npm install
+npm start
 ```
+
+It should be live at http://localhost:3000/
 
 ### Developers Guideline
 -  Always create new work in a new branch.
