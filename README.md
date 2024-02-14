@@ -24,7 +24,7 @@ npm install
 npm start
 ```
 
-4. Lauch the app
+4. Lauch the app front-end in a new command line window
 ```
 cd TaskFlow\client
 npm install
